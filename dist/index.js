@@ -16340,11 +16340,14 @@ const saveFilename = 'soteria-report.sarif';
 async function run() {
     try {
       const token = core.getInput('soteria-token', {required: true});
-      const path = github.path;
-      const commit = github.sha || '';
-      const repoName = github.repository.replace("/", "_");;
+      const path = github.context.path;
+        core.info('path: '+path);
+      const commit = github.context.sha || '';
+        core.info('commit: '+commit);
+        core.info('repoName: '+github.context.repo.repo);
+      const repoName = github.context.repo.replace("/", "_");;
       // TODO: Better handling of repos without infos.
-      const isPrivate = github.repository.private;
+      const isPrivate = github.context.repository.private;
       const ref = github.ref;
       let tag = '';
       if (ref) {
@@ -16354,8 +16357,6 @@ async function run() {
       }
       const taskName = repoName ? `${repoName} ${commit}` : Date().toLocaleString();
 
-        core.info('path: '+path);
-        core.info('commit: '+commit);
         core.info('repoName: '+repoName);
         core.info('taskName: '+taskName);
 
