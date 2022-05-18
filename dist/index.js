@@ -16342,7 +16342,7 @@ async function run() {
       const token = core.getInput('soteria-token', {required: true});
       const path = github.path;
       const commit = github.sha || '';
-      const repoName = github.repository.name;
+      const repoName = github.repository.replace("/", "_");;
       // TODO: Better handling of repos without infos.
       const isPrivate = github.repository.private;
       const ref = github.ref;
@@ -16354,6 +16354,10 @@ async function run() {
       }
       const taskName = repoName ? `${repoName} ${commit}` : Date().toLocaleString();
 
+        core.info('path: '+path);
+        core.info('commit: '+commit);
+        core.info('repoName: '+repoName);
+        core.info('taskName: '+taskName);
 
       fs.mkdirSync(`/tmp/${repoName}/${path}`, { recursive: true })
       execSync(`
