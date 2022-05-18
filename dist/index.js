@@ -16340,26 +16340,23 @@ const saveFilename = 'soteria-report.sarif';
 async function run() {
     try {
       const token = core.getInput('soteria-token', {required: true});
-      const path = github.context.path;
-        core.info('path: '+path);
-      const commit = github.context.sha || '';
-        core.info('commit: '+commit);
-        core.info('repoName: '+github.context.repo.repo);
-      const repoName = github.context.repo.replace("/", "_");;
+      const path = core.getInput('path', {required: false}) || "";
+      const commit = github.context.sha;
+      const repoOwner = github.context.repo.owner;
+      const repoName = github.context.repo.repo;
       // TODO: Better handling of repos without infos.
-      const isPrivate = github.context.repository.private;
-      const ref = github.ref;
+      const isPrivate = github.context.payload.repository? github.context.payload.repository.private : true;
+      const ref = github.context.ref;
       let tag = '';
       if (ref) {
         const refSegments = ref.split('/');
         const isTag = refSegments[refSegments.length -2] === 'tags';
         tag = isTag ? refSegments[refSegments.length - 1] : '';
       }
-      const taskName = repoName ? `${repoName} ${commit}` : Date().toLocaleString();
-
-        core.info('repoName: '+repoName);
+      const taskName = `${repoOwner} ${repoName} ${commit}`;	    
+        core.info('path: '+path);
         core.info('taskName: '+taskName);
-
+	    
       fs.mkdirSync(`/tmp/${repoName}/${path}`, { recursive: true })
       execSync(`
         CODE_DIR=$(pwd)
